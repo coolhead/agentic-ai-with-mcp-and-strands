@@ -24,3 +24,41 @@ printf "Interest rates have been decreasing recently\nexit\n" | timeout 90s pyth
 #### Notes
 
 One earlier run hit Bedrock service capacity limits (serviceUnavailableException); retry succeeded.
+
+---
+
+## Module 5 — Memory Agent with Strands (FAISS Backend)
+**Status:** Completed ✅  
+**Date:** 2025-12-23  
+**Location:** `strands_memory_agent_example/memory_agent.py`
+
+### What I validated
+- Persistent memory using `mem0_memory` tool with FAISS backend
+- Memory operations:
+  - `store` (user preferences)
+  - `retrieve` (semantic similarity search)
+  - `list` (all memories for a user)
+- Tool chaining: memory retrieval → LLM response generation
+- User-scoped memory isolation via `user_id`
+
+### Proof logs
+- `proof/module5_memory.log`
+
+### Commands used
+```bash
+pip install faiss-cpu
+```
+printf "My name is J. I like seafood. I have a dog.\nWhat do I like?\nTell me everything you know about me\nexit\n" \
+| timeout 120s python strands_memory_agent_example/memory_agent.py \
+| tee proof/module5_memory.log
+
+#### Notes
+
+FAISS CPU backend used (no OpenSearch dependency)
+
+Memory persistence verified within session
+
+Retrieval relevance scores confirmed
+
+
+---
