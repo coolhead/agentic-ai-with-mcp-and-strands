@@ -1,0 +1,28 @@
+   295	                continue
+   296	
+   297	            if user_input.lower().startswith("load "):
+   298	                manual_load(user_input.split(" ", 1)[1].strip())
+   299	                continue
+   300	
+   301	            if user_input.lower().startswith("use "):
+   302	                parts = user_input.split(maxsplit=2)
+   303	                tool_name = parts[1] if len(parts) >= 2 else ""
+   304	                arg = parts[2] if len(parts) > 2 else "."
+   305	
+   306	                arg = arg.strip()
+   307	                # Unwrap quotes if the user used them
+   308	                if (arg.startswith('"') and arg.endswith('"')) or (arg.startswith("'") and arg.endswith("'")):
+   309	                    arg = arg[1:-1]
+   310	
+   311	                use_tool_direct(tool_name, arg)
+   312	                continue
+   313	
+   314	
+   315	            handle_create_or_generic(user_input)
+   316	
+   317	        except KeyboardInterrupt:
+   318	            print("\n\nExecution interrupted. Exiting...")
+   319	            break
+   320	        except Exception as e:
+   321	            print(f"\nAn error occurred: {str(e)}")
+   322	            print("Please try a different request.")

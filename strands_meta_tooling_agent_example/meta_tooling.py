@@ -299,10 +299,16 @@ if __name__ == "__main__":
                 continue
 
             if user_input.lower().startswith("use "):
-                parts = user_input.split()
+                parts = user_input.split(maxsplit=2)
                 tool_name = parts[1] if len(parts) >= 2 else ""
-                path = parts[2] if len(parts) >= 3 else None
-                use_tool_direct(tool_name, path)
+                arg = parts[2] if len(parts) > 2 else "."
+
+                arg = arg.strip()
+                # Unwrap quotes if the user used them
+                if (arg.startswith('"') and arg.endswith('"')) or (arg.startswith("'") and arg.endswith("'")):
+                    arg = arg[1:-1]
+
+                use_tool_direct(tool_name, arg)
                 continue
 
 
