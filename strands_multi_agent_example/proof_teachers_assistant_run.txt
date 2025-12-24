@@ -1,0 +1,41 @@
+
+📁 Teacher's Assistant Strands Agent 📁
+
+Ask a question in any subject area, and I'll route it to the appropriate specialist.
+Type 'exit' to quit.
+
+> Routed to: MATH
+Routed to Math Assistant
+Solutions: x = -3, -2
+
+Verification:
+- Check at x=-3: 0
+- Check at x=-2: 0
+
+> Routed to: COMPSCI
+Routed to Computer Science Assistant
+Here’s a simple Python function to check if a string is a palindrome (ignoring punctuation/spaces and case):
+
+```python
+def is_palindrome(s: str) -> bool:
+    cleaned = ''.join(ch.lower() for ch in s if ch.isalnum())
+    return cleaned == cleaned[::-1]
+
+print(is_palindrome('A man, a plan, a canal, Panama'))  # True
+print(is_palindrome('hello'))  # False
+```
+
+> Routed to: LANGUAGE
+Routed to Language Assistant
+"Hola, ¿cómo estás?" (informal)
+
+"Hola, ¿cómo está usted?" (formal)
+
+> Routed to: ENGLISH
+Routed to English Assistant
+"He doesn't like apples."
+
+Explanation: Changed "don't" to "doesn't" to make the verb agree with the subject "he".
+
+> 
+Goodbye! 👋

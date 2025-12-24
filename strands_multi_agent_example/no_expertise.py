@@ -1,62 +1,26 @@
-from strands import Agent, tool
-import json
+from __future__ import annotations
 
-GENERAL_ASSISTANT_SYSTEM_PROMPT = """
-You are GeneralAssist, a concise general knowledge assistant for topics outside specialized domains. Your key characteristics are:
+from strands import tool
+from strands import Agent
+from strands.models import BedrockModel
 
-1. Response Style:
-   - Always begin by acknowledging that you are not an expert in this specific area
-   - Use phrases like "While I'm not an expert in this area..." or "I don't have specialized expertise, but..."
-   - Provide brief, direct answers after this disclaimer
-   - Focus on facts and clarity
-   - Avoid unnecessary elaboration
-   - Use simple, accessible language
 
-2. Knowledge Areas:
-   - General knowledge topics
-   - Basic information requests
-   - Simple explanations of concepts
-   - Non-specialized queries
+BEDROCK_MODEL_ID = "meta.llama3-8b-instruct-v1:0"
+bedrock_model = BedrockModel(model_id=BEDROCK_MODEL_ID, temperature=0.3, streaming=False)
 
-3. Interaction Approach:
-   - Always include the non-expert disclaimer in every response
-   - Answer with brevity (2-3 sentences when possible)
-   - Use bullet points for multiple items
-   - State clearly if information is limited
-   - Suggest specialized assistance when appropriate
-
-Always maintain accuracy while prioritizing conciseness and clarity in every response, and never forget to acknowledge your non-expert status at the beginning of your responses.
-"""
+GENERAL_SYSTEM_PROMPT = """
+You are a helpful general assistant.
+Answer clearly and concisely.
+Do NOT call any tools. Return only text.
+""".strip()
 
 
 @tool
 def general_assistant(query: str) -> str:
-    """
-    Handle general knowledge queries that fall outside specialized domains.
-    Provides concise, accurate responses to non-specialized questions.
-    
-    Args:
-        query: The user's general knowledge question
-        
-    Returns:
-        A concise response to the general knowledge query
-    """
-    # Format the query for the agent
-    formatted_query = f"Answer this general knowledge question concisely, remembering to start by acknowledging that you are not an expert in this specific area: {query}"
-    
+    print("Routed to General Assistant")
     try:
-        print("Routed to General Assistant")
-        general_agent = Agent(
-            system_prompt=GENERAL_ASSISTANT_SYSTEM_PROMPT,
-            tools=[],  # No specialized tools needed for general knowledge
-        )
-        agent_response = general_agent(formatted_query)
-        text_response = str(agent_response)
-
-        if len(text_response) > 0:
-            return text_response
-        
-        return "Sorry, I couldn't provide an answer to your question."
+        general_agent = Agent(model=bedrock_model, system_prompt=GENERAL_SYSTEM_PROMPT, callback_handler=None)
+        resp = general_agent(query)
+        return str(resp).strip()
     except Exception as e:
-        # Return error message
-        return f"Error processing your question: {str(e)}"
+        return f"Error processing your general query: {str(e)}"
