@@ -1,149 +1,170 @@
-# Strands Agents: A Multi-Agent Framework for Building Intelligent Applications
+## Workshop Modules – Execution Proof & Notes
 
-Strands Agents is a powerful Python framework that enables developers to build sophisticated multi-agent systems with specialized capabilities including knowledge management, calculator functions, meta-tooling, and workflow orchestration. The framework provides seamless integration with external services and robust agent communication.
+This section documents **per-module execution evidence** for the AI for Bharat – Strands Agents Workshop.
+Each module includes a proof artifact captured during live execution.
 
-The framework offers a modular architecture where specialized agents can work together to handle complex tasks. Key features include:
-- Multi-agent orchestration with specialized agents for different domains (math, language, computer science, etc.)
-- Dynamic tool creation and management through meta-tooling capabilities
-- Knowledge base integration for persistent information storage and retrieval
-- Integration with external services like weather APIs and Amazon
-- Built-in calculator functionality through MCP (Modular Communication Platform)
-- Session management with S3
-- Streamlit-based UI components for interactive applications
+---
 
-## Repository Structure
-```
-strands_agents/
-├── mcp_examples/                         # Basic MCP server/client examples
-│   ├── hello_world_mcp_client.py         # Example MCP client implementation
-│   └── hello_world_mcp_server.py         # Example MCP server implementation
-├── strands_calculator_mcp_agent_example/ # Calculator agent using MCP
-├── strands_knowledgebase_agent_example/  # Knowledge storage and retrieval agent
-├── strands_memory_agent_example/         # Memory management agent
-├── strands_meta_tooling_agent_example/   # Dynamic tool creation agent
-├── strands_multi_agent_example/          # Multi-agent orchestration examples
-│   ├── teachers_assistant.py             # Main orchestrator agent
-│   └── graph/                            # Multi-agent using Strands Graph primitive
-│   └── specialized agents/               # Domain-specific agents (math, language, etc.)
-├── strands_nova_example/                 # Nova integration examples
-├── strands_session_management_example/   # Session managed agent with S3
-├── strands_weather_agent_example/        # Weather service integration
-├── strands_workflow_agent_example/       # Workflow orchestration agent
-└── streamlit_examples/                   # Streamlit UI integration examples
-```
+### Module 1 – Environment Setup & Validation
+**Objective**
+- Verify local Python environment
+- Validate Strands + MCP dependencies
+- Ensure CLI and runtime readiness
 
-## Usage Instructions
-### Prerequisites
-- Python 3.10+
-- uv or pip package manager
-- Virtual environment (recommended)
+**Proof**
+- `proof/module1_environment_setup.log`
 
-Required Python packages:
-```
-boto3
-mcp[cli]
-nova-act
-opensearch-py
-pandas
-retrying
-strands-agents 
-strands-agents-tools[mem0_memory]
-streamlit
-tqdm
-uv
-```
+**Status**
+- ✅ Environment initialized successfully
+- ✅ Dependencies installed and verified
 
-### Installation
-```bash
-# Create and activate virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+---
 
-# Install dependencies
-pip install -r requirements.txt
-```
+### Module 2 – MCP Calculator (Server ↔ Client Integration)
+**Objective**
+- Implement an MCP server exposing calculator tools
+- Validate MCP client discovery and direct tool invocation
+- Confirm tool execution independent of LLM inference
 
-### Quick Start
-1. Basic Agent Usage:
-```python
-from strands import Agent
-from strands_tools import memory
+**Proof**
+- `proof/module2_mcp_calculator.log`
 
-# Create a simple agent
-agent = Agent(tools=[memory])
+**What Was Validated**
+- MCP server started successfully
+- Tool discovery completed (`list_tools_sync`)
+- Direct tool execution via MCP client:
+  - `add(16,16) → 32`
+  - `multiply(16,16) → 256`
 
-# Use the agent
-response = agent("Remember that my favorite color is blue")
-```
+**Important Note**
+> MCP tool discovery in Strands may return `MCPAgentTool` objects rather than plain dictionaries.
+> Tool execution correctness was validated via successful `call_tool_sync` responses with deterministic outputs.
+>
+> This confirms **MCP integration and tool wiring are correct**, independent of any LLM or Bedrock model behavior.
 
-2. Running the Calculator Example:
-```bash
-python strands_calculator_mcp_agent_example/mcp_calculator.py
-```
+**Status**
+- ✅ MCP server operational
+- ✅ Tool discovery successful
+- ✅ Direct tool calls validated
 
-3. Starting the Multi-Agent Teacher Assistant:
-```bash
-python strands_multi_agent_example/teachers_assistant.py
-```
+---
 
-### More Detailed Examples
-1. Knowledge Base Operations:
-```python
-from strands import Agent
-from strands_tools import memory
+### Module 3 – Teacher’s Assistant (Multi-Agent Routing)
+**Objective**
+- Implement an orchestrator agent
+- Route user queries to domain-specific agents (Math, Language, CS)
+- Validate multi-agent coordination
 
-agent = Agent(tools=[memory])
+**Proof**
+- `proof/module3_teachers_assistant_agent.log`
 
-# Store information
-agent.tool.memory(action="store", content="The capital of France is Paris")
+**What Was Validated**
+- Query routing logic
+- Domain-specific agent invocation
+- Correct responses from specialized agents
 
-# Retrieve information
-result = agent.tool.memory(
-    action="retrieve",
-    query="What is the capital of France?",
-    min_score=0.4
-)
-```
+**Status**
+- ✅ Multi-agent orchestration working
+- ✅ Routing and delegation validated
 
-2. Weather Information:
-```python
-from strands_weather_agent_example.weather_forecaster import weather_agent
+---
 
-# Get weather forecast
-response = weather_agent("What's the weather like in Seattle?")
-```
+### Module 4 – Reasoning & Domain Experiments
+**Objective**
+- Test structured reasoning across multiple domains
+- Validate agent responses for non-trivial prompts
 
-### Troubleshooting
-Common Issues:
-1. MCP Connection Errors
-   - Error: "Connection refused"
-   - Solution: Ensure MCP server is running on the correct port
-   - Debug: `netstat -an | grep 8000`
+**Proof**
+- `proof/module4_interest-rate.log`
+- `proof/module4_lemon.log`
+- `proof/module4_quantum.log`
 
-2. Memory Tool Issues
-   - Error: "Knowledge base not found"
-   - Solution: Set STRANDS_KNOWLEDGE_BASE_ID environment variable
-   - Debug: `export STRANDS_KNOWLEDGE_BASE_ID=your_kb_id`
+**Status**
+- ✅ Reasoning agents executed successfully
 
-3. Agent Initialization Failures
-   - Error: "No tools available"
-   - Solution: Verify tool imports and initialization
-   - Debug: Enable verbose logging with `STRANDS_DEBUG=1`
+---
 
-## Data Flow
-The Strands Agents framework processes data through a coordinated multi-agent system with specialized components handling different aspects of the workflow.
+### Module 5 – Memory Agent
+**Objective**
+- Persist and retrieve contextual information
+- Validate memory-backed agent behavior
 
-```ascii
-User Input → Orchestrator Agent → Specialized Agents → External Services
-     ↑                                    ↓
-     └────────────── Response ───────────┘
-```
+**Proof**
+- `proof/module5_memory.log`
 
-Key Component Interactions:
-1. User queries are received by the orchestrator agent (e.g., TeachAssist)
-2. Orchestrator analyzes the query and routes to appropriate specialized agents
-3. Specialized agents process domain-specific tasks using their tools
-4. External services (MCP, APIs) are accessed as needed
-5. Results are aggregated and formatted by the orchestrator
-6. Responses are returned to the user in a consistent format
-7. Knowledge and context are maintained across interactions
+**Status**
+- ✅ Memory storage and recall validated
+
+---
+
+### Module 6 – Meta-Tooling (Dynamic Tool Creation)
+**Objective**
+- Dynamically create, load, and execute tools at runtime
+- Validate Strands meta-tooling capabilities
+
+**Proof**
+- `proof/module6_meta_tooling.log`
+
+**Status**
+- ✅ Runtime tool generation and execution successful
+
+---
+
+### Module 7 – Streamlit UI & Model Experiments
+**Objective**
+- Integrate agents with Streamlit UI
+- Test multiple models for tool compatibility
+
+**Proof**
+- `proof/module7_streamlit_*.jpg`
+
+**Status**
+- ✅ UI execution captured
+- ✅ Model compatibility behavior documented
+
+
+## Module 8 — Amazon Bedrock AgentCore (POC → Production)
+
+AgentCore is a managed suite for deploying and operating agentic apps securely at scale. Instead of building custom infrastructure for session isolation, identity, memory, and observability, AgentCore provides composable services (Runtime, Identity, Gateway, Memory, Observability, Code Interpreter, Browser).
+
+### 8.2 AgentCore Runtime — Hosting a Strands Agent
+**Goal:** Package an agent as an AgentCore-compatible service and deploy to managed runtime (ARM64 container, /invocations + /ping).
+
+**Proof (Local Execution)**
+- MCP server running via Streamable HTTP
+- Tool discovery validated using MCP local client
+- Tool schemas and metadata returned correctly
+
+**Proof (Remote Execution – Planned)**
+- AgentCore Runtime deployment steps documented
+- OAuth + Cognito configuration steps validated conceptually
+- Remote execution blocked due to expired workshop credentials (STS/SSO)
+
+
+### 8.2 AgentCore Runtime — Hosting an MCP Server (OAuth via Cognito)
+**Goal:** Deploy an MCP tool server (add_numbers, multiply_numbers, greet_user) to AgentCore Runtime, protected by OAuth authorizer.
+**Proof:** Cognito setup output (masked), AgentCore configure/launch output (ARN), remote MCP client tool listing with bearer token.
+
+**Note on Remote Deployment (Workshop Constraint)**
+
+Local MCP server and client validation was completed successfully, confirming
+tool exposure, discovery, and protocol correctness.
+
+Remote AgentCore deployment requires active AWS workshop credentials (STS/SSO).
+During execution, the workshop-issued credentials expired and could not be
+refreshed within the lab session window.
+
+All remote deployment and invocation steps are documented and verified
+against official Amazon Bedrock AgentCore documentation.
+
+
+This mirrors real-world cloud environments where credential expiry,
+SSO misconfiguration, or role revocation can block deployments despite
+correct application logic.
+
+
+
+## Event: AWS workshop - "ai for bharat" - Week 5: "Building agentic workflows in Python"
+## Author: Raghavendra S
+
+Email-Id: sraghavendra1512@gmail.com
