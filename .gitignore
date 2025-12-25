@@ -181,3 +181,4 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 pets-kb-files/
+config_file.py
